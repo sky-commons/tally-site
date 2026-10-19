@@ -27,57 +27,31 @@ tally-relay --key /etc/tally/relay.key --max-upload 6Mbit/s \\
   --listen 0.0.0.0:10900 --beast-out 127.0.0.1:30105`;
 
 const differences: { title: string; body: ReactNode }[] = [
-  {
-    title: "No single operator",
-    body: "tally-relay is one open-source binary, and relays peer by area. Your feeder sends to the two nearest healthy relays on different networks and fails over on its own. There is no company to buy and no server to switch off.",
-  },
-  {
-    title: "Signed at the antenna",
-    body: "tally-feed signs a batch a second with a station key made at install. Relays forward it untouched, anyone downstream can check where it came from, and your stats follow the key, not an account.",
-  },
-  {
-    title: "Delivery is checked",
-    body: "The feeder asks relays to prove they hold what it sent, and moves off a relay that drops data.",
-  },
-  {
-    title: "MLAT on the relays",
-    body: "Two or three relays per area solve MLAT from everyone's signed raw. A fix credits only the receivers whose signed raw it used.",
-  },
+  { title: "No single operator", body: "Anyone can run a relay. Feeders fail over between them." },
+  { title: "Signed at the antenna", body: "Every batch carries your station key. No account." },
+  { title: "Delivery is checked", body: "Feeders verify relays hold their data." },
+  { title: "MLAT on the relays", body: "Solved per area, credited to the receivers used." },
   {
     title: "Take the raw back",
     body: (
       <>
-        Run a relay for your area and <InlineCode>--beast-out</InlineCode> hands every reception in
-        it to your own readsb as BEAST.
+        Run a relay, get your area as BEAST via <InlineCode>--beast-out</InlineCode>.
       </>
     ),
   },
-  {
-    title: "Open licences",
-    body: "Receptions go in under CC0. What relays publish is ODbL, so nobody can take it private. Code is MIT or Apache-2.0.",
-  },
+  { title: "Open data", body: "CC0 in, ODbL out. Code MIT or Apache-2.0." },
 ];
 
 const feederNotes: ReactNode[] = [
-  "Installs tally-feed for your architecture, checks its sha256, reads your decoder and location from the existing config, makes the station key and starts a systemd unit.",
   <>
-    Reads BEAST on <InlineCode>:30005</InlineCode> as one more client. Opens no port, and your other
-    feeds are untouched.
+    Reads BEAST on <InlineCode>:30005</InlineCode>. Opens no port, leaves other feeds alone.
   </>,
   <>
-    Upload is capped at 64 KB/s per relay (<InlineCode>--ceiling</InlineCode>). Over the cap it
-    drops and counts, never buffers.
+    Exact location for MLAT, or <InlineCode>--precision &lt;m&gt;</InlineCode> if rounded.
   </>,
   <>
-    Location is published as entered, since MLAT needs it exact. Rounded it? Pass{" "}
-    <InlineCode>--precision &lt;metres&gt;</InlineCode>.
-  </>,
-  <>
-    978 MHz too: <InlineCode>--uat 127.0.0.1:30978</InlineCode> with dump978-fa.
-  </>,
-  <>
-    Container: <InlineCode>ghcr.io/sky-commons/tally-feed</InlineCode>, signed like the binaries (
-    <Link href={`${repo}/blob/main/packaging/README.md`}>packaging</Link>).
+    UAT: <InlineCode>--uat 127.0.0.1:30978</InlineCode>. Docker:{" "}
+    <InlineCode>ghcr.io/sky-commons/tally-feed</InlineCode>.
   </>,
 ];
 
@@ -119,9 +93,8 @@ export function App() {
                 An ADS-B network with no single operator
               </Heading>
               <Text as="p" size="5" color="gray">
-                Tally is an open feeder and relay network. Run tally-feed beside the feeds you
-                already have. Anyone can run a relay, every batch is signed at your antenna, and
-                nobody can sell, rewrite or switch off the data.
+                Feed it alongside what you already run. Anyone can run a relay, and nobody can
+                sell or switch off the data.
               </Text>
               <Flex gap="3" wrap="wrap">
                 <Button size="3" asChild>
@@ -142,7 +115,7 @@ export function App() {
           <Box pb="8">
             <LiveMap />
             <Text as="p" size="1" color="gray" mt="2">
-              Live from the network. Red aircraft are positioned by Tally MLAT.
+              Live. Red is Tally MLAT.
             </Text>
           </Box>
 
@@ -171,7 +144,7 @@ export function App() {
           <Section size="2" id="feed">
             <SectionHeading
               title="Feed Tally"
-              lead="On anything already running readsb: a Pi image, adsb.im, plain Debian."
+              lead="Any box running readsb, adsb.im included."
             />
             <Box mt="5">
               <CommandBlock command={installCommand} />
@@ -184,7 +157,7 @@ export function App() {
           <Section size="2" id="relay">
             <SectionHeading
               title="Run a relay"
-              lead="One static binary. --max-upload is a hard cap on what it sends, so the bill is bounded: 6 Mbit/s fits a $12 Lightsail plan's allowance with room left for intake."
+              lead="One binary. --max-upload caps your bill."
             />
             <Box mt="5">
               <CommandBlock command={relayCommand} />
@@ -206,17 +179,12 @@ export function App() {
             <NoteList
               items={[
                 <>
-                  Signed releases (sigstore) on <Link href={`${repo}/releases`}>GitHub</Link>.
+                  One relay so far (Flightlines). Want to run the second?{" "}
+                  <Link href={`${repo}/issues`}>Open an issue</Link>.
                 </>,
+                "Receivers are around LA. LA feeders get MLAT going.",
                 <>
-                  One public relay, run by Flightlines. A second operator is what the network needs
-                  most: <Link href={`${repo}/issues`}>open an issue</Link>.
-                </>,
-                "Receivers so far are around Los Angeles. MLAT needs three or more in range of each other, so LA feeders help most right now.",
-                <>
-                  Station pages and leaderboards are at{" "}
-                  <Link href="https://tally.flightlines.ai">tally.flightlines.ai</Link> until they
-                  move here.
+                  Station stats: <Link href="https://tally.flightlines.ai">tally.flightlines.ai</Link>.
                 </>,
               ]}
             />
