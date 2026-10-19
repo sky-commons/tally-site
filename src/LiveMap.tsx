@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Card, Flex, Text } from "@radix-ui/themes";
+import { Card, Flex } from "@radix-ui/themes";
+import { count, Stat } from "./ui";
 import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
+import { api, type Network } from "./api";
 
-// The public Tally API (one operator's, today Flightlines'). Its JSON is declared in
-// sky-commons/tally crates/api-types.
-const api = "https://tally-api.flightlines.ai";
 // The API answers a box at most 60 degrees each way.
 const maxSpan = 60;
 
@@ -21,13 +20,6 @@ type Aircraft = {
 };
 
 type AircraftUpdate = { full: boolean; aircraft: Aircraft[]; gone: string[] };
-
-type Network = {
-  receivers_online: number;
-  messages_per_sec: number;
-  aircraft: number;
-  aircraft_by_source: { mlat: number };
-};
 
 export function LiveMap() {
   const container = useRef<HTMLDivElement>(null);
@@ -110,6 +102,8 @@ export function LiveMap() {
 
       map.on("load", () => {
         if (!map) return;
+        // Credits start folded, so they never cover the map on a phone.
+        map.getContainer().querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
         map.addImage("plane", planeIcon(), { sdf: true, pixelRatio: 2 });
         map.addSource("aircraft", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
         map.addLayer({
@@ -175,29 +169,16 @@ export function LiveMap() {
 
   return (
     <div className="live-map">
-      <div ref={container} className="live-map-canvas" />
+      <div ref={container} className="map-canvas" />
       <Card size="1" className="live-map-stats">
         <Flex gap="4" wrap="wrap">
-          <Stat label="receivers" value={network?.receivers_online} />
-          <Stat label="aircraft" value={network?.aircraft} />
-          <Stat label="by MLAT" value={network?.aircraft_by_source.mlat} />
-          <Stat label="msg/s" value={network && Math.round(network.messages_per_sec)} />
+          <Stat label="receivers" value={count(network?.receivers_online)} />
+          <Stat label="aircraft" value={count(network?.aircraft)} />
+          <Stat label="by MLAT" value={count(network?.aircraft_by_source.mlat)} />
+          <Stat label="msg/s" value={count(network?.messages_per_sec)} />
         </Flex>
       </Card>
     </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number | null | undefined }) {
-  return (
-    <Flex direction="column">
-      <Text size="4" weight="bold">
-        {value == null ? "…" : value.toLocaleString("en-US")}
-      </Text>
-      <Text size="1" color="gray">
-        {label}
-      </Text>
-    </Flex>
   );
 }
 

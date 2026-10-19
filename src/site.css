@@ -1,15 +1,43 @@
 body {
   margin: 0;
+  background: var(--color-background);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--gray-12);
+  text-decoration: none;
+}
+
+/* Header links that only fit beside the brand on a wide screen. */
+@media (max-width: 640px) {
+  .wide-only {
+    display: none;
+  }
+}
+
+.mono {
+  font-family: var(--code-font-family);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.key {
+  word-break: break-all;
 }
 
 .command {
   margin: 0;
+  min-width: 0;
   overflow-x: auto;
   font-family: var(--code-font-family);
   font-size: var(--font-size-2);
   line-height: var(--line-height-2);
-  white-space: pre-wrap;
-  word-break: break-all;
+  white-space: pre;
 }
 
 .inline-code {
@@ -22,36 +50,48 @@ body {
 }
 
 .note-list {
+  margin-top: 0;
+  margin-bottom: 0;
   padding-left: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.live-map {
+.live-map,
+.station-map {
   position: relative;
-  height: 480px;
   border-radius: var(--radius-4);
   border: 1px solid var(--gray-a5);
   overflow: hidden;
   background: var(--gray-a2);
 }
 
+.live-map {
+  height: 480px;
+}
+
+.station-map,
+.station-map-empty {
+  height: 320px;
+}
+
 @media (max-width: 640px) {
   .live-map {
-    height: 380px;
+    height: 400px;
   }
 }
 
-.live-map-canvas {
+.map-canvas {
   position: absolute;
   inset: 0;
 }
 
+/* Top left: the zoom buttons hold the top right and the map's credits the bottom. */
 .live-map-stats {
   position: absolute;
   left: var(--space-3);
-  bottom: var(--space-3);
+  top: var(--space-3);
 }
 
 .plane-popup {

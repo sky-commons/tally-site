@@ -1,6 +1,6 @@
-# skycommons.org
+# tally.skycommons.org
 
-Sky Commons' site. React and [Radix Themes](https://www.radix-ui.com/themes), built by Vite and
+Tally's site: the live map, the leaderboard and every station's page. React and [Radix Themes](https://www.radix-ui.com/themes), built by Vite and
 prerendered to static HTML, served by GitHub Pages from `.github/workflows/pages.yml` on every
 push to `main`.
 
