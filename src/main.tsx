@@ -4,6 +4,7 @@ import "@radix-ui/themes/tokens/colors/sky.css";
 import "@radix-ui/themes/tokens/colors/slate.css";
 import "@radix-ui/themes/components.css";
 import "@radix-ui/themes/utilities.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "./site.css";
 import { hydrateRoot } from "react-dom/client";
 import { App } from "./App";
