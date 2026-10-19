@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sky Commons</title>
+    <meta
+      name="description"
+      content="Open infrastructure for the sky. Tally is an open network for ADS-B receivers that nobody owns."
+    />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <script>
+      // Radix Themes follows the .dark or .light class on <html>; set it before paint.
+      document.documentElement.classList.add(
+        matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+      );
+    </script>
+  </head>
+  <body>
+    <div id="root"><!--app--></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>
