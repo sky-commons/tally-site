@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Container, Flex, IconButton, Link, Separator, Text, Theme } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { mapUrl } from "./api";
 
 export const repo = "https://github.com/sky-commons/tally";
 
@@ -18,6 +19,7 @@ export function Layout({ children }: { children: ReactNode }) {
             </a>
             <Flex asChild align="center" gap="5">
               <nav>
+                <NavLink href={mapUrl}>Map</NavLink>
                 <NavLink href="/leaderboard/">Leaderboard</NavLink>
                 <NavLink href="/#feed" wide>
                   Feed
@@ -47,9 +49,22 @@ export function Layout({ children }: { children: ReactNode }) {
               </Link>{" "}
               project. Pilots say “tally” when they have the traffic in sight.
             </Text>
-            <Link href="https://github.com/sky-commons" size="2">
-              github.com/sky-commons
-            </Link>
+            <Flex asChild gap="4" wrap="wrap">
+              <nav aria-label="More">
+                <Link href="/api/" size="2">
+                  API
+                </Link>
+                <Link href="/hardware/" size="2">
+                  Hardware
+                </Link>
+                <Link href={mapUrl} size="2">
+                  Map
+                </Link>
+                <Link href={repo} size="2">
+                  Source
+                </Link>
+              </nav>
+            </Flex>
           </footer>
         </Flex>
       </Container>

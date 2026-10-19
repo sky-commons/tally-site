@@ -1,6 +1,9 @@
-// The public Tally API (one operator's, today Flightlines'). Its JSON is declared in
-// sky-commons/tally crates/api-types; these are the fields the site reads.
-export const api = "https://tally-api.flightlines.ai";
+// The public Tally API and map (one operator's, today Flightlines', under Sky Commons' names). The
+// API's JSON is declared in sky-commons/tally crates/api-types; these are the fields the site reads.
+export const api = "https://tally-api.skycommons.org";
+
+/** The full map: tar1090 over the network's readsb (RFC-0187 §1). */
+export const mapUrl = "https://tally-map.skycommons.org";
 
 export type Network = {
   receivers_online: number;
@@ -19,6 +22,12 @@ export type Station = {
   messages_per_sec: number;
   location: Position | null;
   software: string | null;
+};
+
+/** `GET /v1/me`: the stations whose newest session came from the asking address. */
+export type Me = {
+  now_ms: number;
+  stations: { key: string; online: boolean; messages_per_sec: number; last_seen_at_ms: number }[];
 };
 
 export type FeederStats = {

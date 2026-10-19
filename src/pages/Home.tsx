@@ -1,11 +1,12 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Badge, Box, Button, Card, Flex, Grid, Heading, Link, Section, Separator, Text } from "@radix-ui/themes";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import { LiveMap } from "../LiveMap";
 import { repo } from "../Layout";
-import { CommandBlock, InlineCode, NoteList, SectionHeading } from "../ui";
+import { mapUrl, read, shortKey, urlKey, type Me } from "../api";
+import { CommandBlock, count, InlineCode, NoteList, SectionHeading } from "../ui";
 
-const installCommand =
+export const installCommand =
   "curl -fsSL https://github.com/sky-commons/tally/releases/latest/download/install.sh | sudo bash";
 const relayCommand = `tally-relay keygen > /etc/tally/relay.key
 tally-relay --key /etc/tally/relay.key --max-upload 6Mbit/s \\
@@ -71,14 +72,22 @@ export function Home() {
               </a>
             </Button>
           </Flex>
+          <Feeding />
         </Flex>
       </Section>
 
       <Box pb="8">
         <LiveMap />
-        <Text as="p" size="1" color="gray" mt="2">
-          Live. Red is Tally MLAT.
-        </Text>
+        <Flex justify="between" align="center" gap="3" mt="2">
+          <Text size="1" color="gray">
+            Live. Red is Tally MLAT.
+          </Text>
+          <Link href={mapUrl} size="2" weight="medium">
+            <Flex as="span" align="center" gap="1">
+              Full map <ArrowTopRightIcon />
+            </Flex>
+          </Link>
+        </Flex>
       </Box>
 
       <Separator size="4" />
@@ -146,5 +155,54 @@ export function Home() {
         />
       </Section>
     </>
+  );
+}
+
+/** Am I feeding: the stations whose session comes from the visitor's address. Drawn in the browser
+ * only, and nothing at all when the API cannot answer. */
+function Feeding() {
+  const [me, setMe] = useState<Me | null>(null);
+
+  useEffect(() => {
+    let closed = false;
+    read<Me>("/v1/me").then((answer) => {
+      if (!closed && answer.kind === "ok") setMe(answer.value);
+    });
+    return () => {
+      closed = true;
+    };
+  }, []);
+
+  if (me == null) return null;
+  if (me.stations.length === 0) {
+    return (
+      <Text size="2" color="gray">
+        No feeder from your address. <Link href="#feed">Set one up</Link>
+      </Text>
+    );
+  }
+  return (
+    <Card size="1" style={{ width: "100%", maxWidth: 420 }}>
+      <Flex direction="column" gap="2">
+        <Text size="1" color="gray">
+          Feeding from your address
+        </Text>
+        {me.stations.map((station) => (
+          <Flex key={station.key} align="center" justify="between" gap="3">
+            <Flex align="center" gap="2" minWidth="0">
+              <Badge color={station.online ? "green" : "gray"} variant="soft">
+                {station.online ? "Online" : "Offline"}
+              </Badge>
+              <Link href={`/feeders/${urlKey(station.key)}`} size="2" className="mono">
+                {shortKey(station.key)}
+              </Link>
+            </Flex>
+            <Text size="2" color="gray" className="tabular">
+              {count(station.messages_per_sec)} msg/s
+            </Text>
+          </Flex>
+        ))}
+      </Flex>
+    </Card>
   );
 }
