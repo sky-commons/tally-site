@@ -104,3 +104,11 @@ body {
 .plane-popup > div:first-child {
   font-weight: bold;
 }
+
+/* Long commands in a note wrap on a phone rather than run off the page. */
+@media (max-width: 640px) {
+  .note-list .inline-code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

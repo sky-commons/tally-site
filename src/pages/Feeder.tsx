@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Badge, Box, Button, Callout, Card, Code, Flex, Grid, Heading, Link, Section, Text } from "@radix-ui/themes";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { mlatReceivers, read, shortKey, urlKey, type Answer, type FeederStats, type Station } from "../api";
+import { read, shortKey, urlKey, type Answer, type FeederStats, type Station } from "../api";
 import { StationMap } from "../StationMap";
 import { ago, CopyButton, count, km, km2, place, Stat } from "../ui";
 
@@ -168,8 +168,8 @@ function Rank({ stats }: { stats: FeederStats | null }) {
           Not ranked yet
         </Heading>
         <Text size="2" color="gray">
-          Ranking starts once this station helps MLAT, which takes {mlatReceivers} receivers in range
-          of each other. It proves a station is real.
+          Nobody is ranked until MLAT runs, which needs 3–4 receivers in range of each other. Until
+          then the leaderboard is empty.
         </Text>
         <Link href={stats?.area ? `/leaderboard/#${stats.area}` : "/leaderboard/"} size="2">
           How close is your area?

@@ -54,8 +54,9 @@ export function Leaderboard() {
         Leaderboard
       </Heading>
       <Text as="p" size="4" color="gray" mb="6" style={{ maxWidth: 760 }}>
-        Ranked per area by the coverage only a station has and by how much it helps MLAT. A station
-        is ranked once MLAT proves it real.
+        Empty until MLAT runs. Ranking needs MLAT, and MLAT needs 3–4 receivers in range of each
+        other; no area has that yet, so no station is ranked. Once it runs, stations are ranked per
+        area by the coverage only they have and by how much they help MLAT.
       </Text>
       {state.kind === "loading" ? (
         <Text color="gray">Loading…</Text>
@@ -85,11 +86,11 @@ function NoAreas({ network }: { network: Network | null }) {
     <Card size="3" style={{ maxWidth: 760 }}>
       <Flex direction="column" gap="4" align="start">
         <Heading as="h2" size="5">
-          No area has MLAT yet
+          Nobody is ranked yet
         </Heading>
         <Text color="gray">
-          {count(online)} receiver{online === 1 ? "" : "s"} online. Ranking starts in an area once{" "}
-          {mlatReceivers} receivers there hear the same aircraft.
+          {count(online)} receiver{online === 1 ? "" : "s"} online. The leaderboard stays empty until
+          MLAT runs, which needs 3–4 receivers in range of each other.
         </Text>
         <Button asChild>
           <a href="/#feed">Feed Tally</a>
@@ -126,8 +127,8 @@ function Area({ board }: { board: Board }) {
             </Text>
             <Progress value={(Math.min(receivers, mlatReceivers) / mlatReceivers) * 100} size="3" />
             <Text size="2" color="gray">
-              {mlatReceivers - Math.min(receivers, mlatReceivers)} more in range of each other and MLAT
-              starts here, with ranking.
+              MLAT needs at least {mlatReceivers} receivers here that hear the same aircraft. Until it
+              runs, nobody here is ranked.
             </Text>
           </Flex>
         ) : (
