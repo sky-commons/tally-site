@@ -1,7 +1,8 @@
 import { mapUrl } from "./api";
 
-// The site's pages. Every page but a feeder's is prerendered at its path; a feeder's page and the
-// short links to the map are served from 404.html and drawn in the browser from the path.
+// The site's pages. Every page is prerendered at its path, and so is each station the API knew at
+// build time (prerender.mjs); a station newer than the build and the short links to the map are
+// served from 404.html and drawn in the browser from the path.
 export type Route =
   | { kind: "home" }
   | { kind: "leaderboard" }
@@ -79,3 +80,34 @@ export const prerendered: { path: string; file: string }[] = [
   { path: "/hardware/", file: "hardware/index.html" },
   { path: "/404", file: "404.html" },
 ];
+
+/** What a page says about itself to search engines and link previews (prerender.mjs writes it). */
+export function pageMeta(path: string): { title: string; description: string } {
+  const page = route(path);
+  switch (page.kind) {
+    case "home":
+      return {
+        title: "Tally: an open ADS-B network",
+        description:
+          "Feed your ADS-B receiver to an open network alongside what you already run. Early: one relay, two receivers, a live map, MLAT coming. Open data, open code.",
+      };
+    case "leaderboard":
+      return { title: "Leaderboard · Tally", description: "Tally's per-area leaderboard, empty until MLAT runs." };
+    case "feeders":
+      return { title: "Find your station · Tally", description: "Open your Tally receiver's station page by its public key." };
+    case "feeder":
+      return {
+        title: "Station · Tally",
+        description: "A Tally receiver: whether it is feeding, its range and coverage over the last day.",
+      };
+    case "api":
+      return { title: "API · Tally", description: "Tally's public read-only API: aircraft, stations and the network." };
+    case "hardware":
+      return {
+        title: "Hardware · Tally",
+        description: "What a 1090 MHz ADS-B receiver takes: computer, dongle, antenna, and how to place it.",
+      };
+    default:
+      return { title: "Tally", description: "Tally: an open ADS-B feeder and relay network." };
+  }
+}
