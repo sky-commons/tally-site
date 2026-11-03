@@ -3,7 +3,8 @@ import { Badge, Box, Button, Callout, Card, Code, Flex, Grid, Heading, Link, Sec
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { read, shortKey, urlKey, type Answer, type FeederStats, type Station } from "../api";
 import { StationMap } from "../StationMap";
-import { ago, CopyButton, count, km, km2, place, Stat } from "../ui";
+import { ago, CommandBlock, CopyButton, count, km, km2, place, Stat } from "../ui";
+import { installCommand } from "./Home";
 
 type Reads = { station: Answer<Station>; stats: Answer<FeederStats> } | null;
 
@@ -96,6 +97,7 @@ function Missing() {
 function Found({ station, stats }: { station: Station; stats: FeederStats | null }) {
   return (
     <Flex direction="column" gap="5">
+      {station.location_check?.state === "wrong" && <LocationLooksWrong offKm={station.location_check.off_km} />}
       <Text size="2" color="gray">
         {[
           station.software,
@@ -141,6 +143,26 @@ function Found({ station, stats }: { station: Station; stats: FeederStats | null
         </Flex>
       </Card>
     </Flex>
+  );
+}
+
+/** The relay found the claimed location doesn't fit the aircraft this station hears (RFC-0204). */
+function LocationLooksWrong({ offKm }: { offKm?: number }) {
+  return (
+    <Callout.Root color="amber">
+      <Callout.Icon>
+        <InfoCircledIcon />
+      </Callout.Icon>
+      <Flex direction="column" gap="3">
+        <Callout.Text>
+          <strong>Location looks wrong{offKm ? ` by about ${offKm} km` : ""}.</strong> The aircraft this station
+          hears don't fit where it says it is, so it's left out of MLAT until that's fixed. Its data still
+          reaches the map. On the receiver, run the installer again with <Code>--locate</Code>: it asks for the
+          antenna's street address and works out the coordinates and height.
+        </Callout.Text>
+        <CommandBlock command={`${installCommand} --locate`} />
+      </Flex>
+    </Callout.Root>
   );
 }
 
