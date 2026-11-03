@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Container, Flex, IconButton, Link, Separator, Text, Theme } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { mapUrl } from "./api";
+import { mapUrl, mlatRunning } from "./api";
 
 export const repo = "https://github.com/sky-commons/tally";
 
@@ -20,7 +20,8 @@ export function Layout({ children }: { children: ReactNode }) {
             <Flex asChild align="center" gap="5">
               <nav>
                 <NavLink href={mapUrl}>Map</NavLink>
-                <NavLink href="/leaderboard/">Leaderboard</NavLink>
+                {/* The leaderboard ranks by MLAT, so it is linked only once MLAT runs (api.ts). */}
+                {mlatRunning && <NavLink href="/leaderboard/">Leaderboard</NavLink>}
                 <NavLink href="/#feed" wide>
                   Feed
                 </NavLink>
@@ -56,6 +57,12 @@ export function Layout({ children }: { children: ReactNode }) {
                 </Link>
                 <Link href="/hardware/" size="2">
                   Hardware
+                </Link>
+                <Link href="/#faq" size="2">
+                  FAQ
+                </Link>
+                <Link href="https://status.skycommons.org" size="2">
+                  Status
                 </Link>
                 <Link href={mapUrl} size="2">
                   Map

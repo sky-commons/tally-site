@@ -1,10 +1,13 @@
-# Builds the site and publishes it to GitHub Pages (skycommons.org) on every push to main.
+# Builds the site and publishes it to GitHub Pages (tally.skycommons.org) on every push to main, and
+# every hour, so a new station's page is prerendered (scripts/prerender.mjs) and answers 200.
 name: pages
 
 on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    - cron: "23 * * * *"
   workflow_dispatch:
 
 permissions:
