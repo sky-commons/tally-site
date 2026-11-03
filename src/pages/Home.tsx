@@ -1,22 +1,41 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Badge, Box, Button, Card, Flex, Grid, Heading, Link, Section, Separator, Text } from "@radix-ui/themes";
-import { ArrowTopRightIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { LiveMap } from "../LiveMap";
 import { repo } from "../Layout";
-import { mapUrl, read, shortKey, urlKey, type Me } from "../api";
+import { feedRelease, mapUrl, read, shortKey, urlKey, type Me } from "../api";
 import { CommandBlock, count, InlineCode, NoteList, SectionHeading } from "../ui";
 
-export const installCommand =
-  "curl -fsSL https://github.com/sky-commons/tally/releases/latest/download/install.sh | sudo bash";
+// The tally README's own form: download the installer, then run it, so what runs is what was read.
+export const installCommand = `curl -fsSL https://github.com/sky-commons/tally/releases/latest/download/install.sh -o /tmp/tally-install.sh
+sudo bash /tmp/tally-install.sh`;
+export const packagingGuide = `${repo}/blob/main/packaging/README.md`;
+const composeExample = `  tally-feed:
+    image: ghcr.io/sky-commons/tally-feed:${feedRelease}
+    container_name: tally-feed
+    restart: unless-stopped
+    environment:
+      - BEASTHOST=ultrafeeder
+      - LAT=\${FEEDER_LAT}
+      - LONG=\${FEEDER_LONG}
+      - ALT=\${FEEDER_ALT_M}m
+    volumes:
+      - /opt/adsb/tally-feed:/var/lib/tally-feed`;
 const relayCommand = `tally-relay keygen > /etc/tally/relay.key
 tally-relay --key /etc/tally/relay.key --max-upload 6Mbit/s \\
   --listen 0.0.0.0:10900 --beast-out 127.0.0.1:30105`;
 
 const differences: { title: string; body: ReactNode }[] = [
-  { title: "No single operator", body: "Anyone can run a relay. Feeders fail over between them." },
+  {
+    title: "Anyone can run a relay",
+    body: "Feeders fail over between relays. Today there is one, run by Flightlines; the second is open.",
+  },
   { title: "Signed at the antenna", body: "Every batch carries your station key. No account." },
   { title: "Delivery is checked", body: "Feeders verify relays hold their data." },
-  { title: "MLAT on the relays", body: "Solved per area, credited to the receivers used." },
+  {
+    title: "MLAT, coming",
+    body: "Solved on the relays once 3–4 receivers in range hear the same aircraft. It hasn't solved one yet.",
+  },
   {
     title: "Take the raw back",
     body: (
@@ -30,18 +49,78 @@ const differences: { title: string; body: ReactNode }[] = [
 
 const feederNotes: ReactNode[] = [
   <>
-    Reads BEAST on <InlineCode>:30005</InlineCode>. Opens no port, leaves other feeds alone.
+    <Text weight="bold">Updates itself</Text> once a day, signature-checked. Opt out with{" "}
+    <InlineCode>TALLY_AUTO_UPDATE=0</InlineCode> or <InlineCode>--no-auto-update</InlineCode> at install, or later{" "}
+    <InlineCode>sudo systemctl disable --now tally-feed-update.timer</InlineCode>. Installed before 0.7.2? Run the
+    installer once more.
   </>,
   <>
-    Exact location for MLAT, or <InlineCode>--precision &lt;m&gt;</InlineCode> if rounded.
+    <Text weight="bold">After install</Text> it prints your station's page. Within a minute your station is at{" "}
+    <Link href="/feeders/">/feeders/</Link> and its aircraft are on the <Link href={mapUrl}>map</Link>. No ranking or
+    MLAT credit yet.
   </>,
   <>
-    UAT: <InlineCode>--uat 127.0.0.1:30978</InlineCode>. Docker:{" "}
-    <InlineCode>ghcr.io/sky-commons/tally-feed</InlineCode>.
+    Reads BEAST on <InlineCode>:30005</InlineCode>. Opens no port, leaves other feeds alone. UAT:{" "}
+    <InlineCode>--uat 127.0.0.1:30978</InlineCode>.
   </>,
   <>
-    Then <Link href="/feeders/">find your station</Link>: its page, figures and rank.
+    Your exact location goes only to relays, for MLAT. Public pages, the map and the API show a coarse cell a few km
+    across.
   </>,
+  <>
+    Light: capped at 64 MB of memory and 20% of a CPU, uploads at most 64 KB/s to each of at most 2 relays. The
+    signature checker (cosign) takes about 150 MB of disk.
+  </>,
+  <>
+    Runs on 64-bit Linux (x86_64, ARM64) and 32-bit ARMv7 (Raspberry Pi 2 and later, not the Pi 1 or original Zero),
+    with systemd 247 or newer: Raspberry Pi OS or Debian Bullseye and later.
+  </>,
+  <>
+    Remove it: <InlineCode>sudo bash /tmp/tally-install.sh --uninstall</InlineCode> keeps your key;{" "}
+    <InlineCode>--uninstall --purge</InlineCode> deletes it.
+  </>,
+];
+
+const faq: { q: string; a: ReactNode }[] = [
+  {
+    q: "How is this different from adsb.lol, ADSBexchange or FlightAware?",
+    a: (
+      <>
+        Run it alongside them: Tally reads the same BEAST output and touches nothing else. There are no perks yet, no
+        premium account and no MLAT results. What differs is the structure: anyone can run a relay, your receiver is a
+        key rather than an account, and all the data is open.
+      </>
+    ),
+  },
+  {
+    q: "What does “CC0 in, ODbL out” mean?",
+    a: (
+      <>
+        What your receiver sends is given away with no rights reserved (CC0), so relays may pass it on freely. The
+        published database is under the ODbL: anyone may use it, commercially too, as long as they credit it and share
+        changes to the database on the same terms. The daily traces are at{" "}
+        <Link href="https://github.com/sky-commons/history">sky-commons/history</Link>.
+      </>
+    ),
+  },
+  {
+    q: "What do I get for feeding?",
+    a: (
+      <>
+        Today: your station page and the map. Once MLAT runs, credit for the positions you help solve and a place on
+        the leaderboard.
+      </>
+    ),
+  },
+  {
+    q: "Is it up?",
+    a: (
+      <>
+        <Link href="https://status.skycommons.org">status.skycommons.org</Link> checks the site, the map, the API and
+        the relay every ten minutes.
+      </>
+    ),
+  },
 ];
 
 export function Home() {
@@ -56,15 +135,18 @@ export function Home() {
             An ADS-B network with no single operator
           </Heading>
           <Text as="p" size="5" color="gray">
-            Feed it alongside what you already run. Anyone can run a relay, and nobody can sell or
-            switch off the data.
+            Feed it alongside what you already run. It is built so anyone can run a relay and no one company holds
+            the data.
+          </Text>
+          <Text as="p" size="3" weight="medium">
+            Early: 1 relay (Flightlines), 2 receivers, map only, MLAT coming.
           </Text>
           <Flex gap="3" wrap="wrap">
             <Button size="3" asChild>
               <a href="#feed">Feed Tally</a>
             </Button>
             <Button size="3" variant="soft" asChild>
-              <a href="/leaderboard/">Leaderboard</a>
+              <a href={mapUrl}>Full map</a>
             </Button>
             <Button size="3" variant="outline" color="gray" asChild>
               <a href={repo}>
@@ -78,16 +160,6 @@ export function Home() {
 
       <Box pb="8">
         <LiveMap />
-        <Flex justify="between" align="center" gap="3" mt="2">
-          <Text size="1" color="gray">
-            Live. Red is Tally MLAT.
-          </Text>
-          <Link href={mapUrl} size="2" weight="medium">
-            <Flex as="span" align="center" gap="1">
-              Full map <ArrowTopRightIcon />
-            </Flex>
-          </Link>
-        </Flex>
       </Box>
 
       <Separator size="4" />
@@ -113,11 +185,28 @@ export function Home() {
       <Separator size="4" />
 
       <Section size="2" id="feed">
-        <SectionHeading title="Feed Tally" lead="Any box running readsb, adsb.im included." />
+        <SectionHeading
+          title="Feed Tally"
+          lead="Any Linux box running readsb: Raspberry Pi OS, Debian, Ubuntu. Download the installer, then run it."
+        />
         <Box mt="5">
           <CommandBlock command={installCommand} />
         </Box>
         <NoteList items={feederNotes} />
+
+        <Box mt="6">
+          <Heading as="h3" size="5" mb="2">
+            adsb.im, or Docker
+          </Heading>
+          <Text as="p" size="3" color="gray" style={{ maxWidth: 760 }}>
+            On adsb.im or a compose setup, run Tally as a container beside ultrafeeder (
+            <Link href={packagingGuide}>packaging guide</Link>). Containers don't update themselves: move the tag when
+            a release comes out.
+          </Text>
+          <Box mt="3">
+            <CommandBlock command={composeExample} />
+          </Box>
+        </Box>
       </Section>
 
       <Separator size="4" />
@@ -148,11 +237,30 @@ export function Home() {
               <Link href={`${repo}/issues`}>Open an issue</Link>.
             </>,
             <>
-              Two receivers so far, in LA and the Bay Area. Three in range of each other start
-              MLAT, and the <Link href="/leaderboard/">leaderboard</Link> with it.
+              Two receivers so far, in LA and the Bay Area, about 550 km apart. MLAT needs 3–4 receivers in range of
+              each other, so it hasn't solved a position yet. The <Link href="/leaderboard/">leaderboard</Link> starts
+              with it.
             </>,
           ]}
         />
+      </Section>
+
+      <Separator size="4" />
+
+      <Section size="2" id="faq">
+        <SectionHeading title="Questions" />
+        <Flex direction="column" gap="4" mt="5" maxWidth="760px">
+          {faq.map((item) => (
+            <Flex key={item.q} direction="column" gap="1">
+              <Heading as="h3" size="4">
+                {item.q}
+              </Heading>
+              <Text as="p" size="3" color="gray">
+                {item.a}
+              </Text>
+            </Flex>
+          ))}
+        </Flex>
       </Section>
     </>
   );

@@ -98,3 +98,11 @@ export function isKey(text: string): boolean {
 }
 
 export const mlatReceivers = 3;
+
+/** Whether MLAT has solved positions: the leaderboard is in the header's links only then. MLAT has
+ * never solved a real position (it needs 3–4 receivers in range of each other); set this to true
+ * once it has. The live counters read the API's own count and need no change. */
+export const mlatRunning = false;
+
+/** The release whose image the compose example pins (packaging/README.md, "Run it as a container"). */
+export const feedRelease = "v0.7.2";

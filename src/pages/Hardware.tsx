@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { Box, Button, Card, Flex, Grid, Heading, Link, Section, Separator, Text } from "@radix-ui/themes";
-import { installCommand } from "./Home";
+import { installCommand, packagingGuide } from "./Home";
 import { CommandBlock, InlineCode, NoteList, SectionHeading } from "../ui";
 
 const parts: { title: string; body: ReactNode }[] = [
   {
     title: "Computer",
-    body: "A Raspberry Pi 4 or 5, or any small Linux box.",
+    body: "A Raspberry Pi 4 or 5 (a Pi 2 or later works; not the Pi 1 or original Zero), or any 64-bit Linux box. Raspberry Pi OS or Debian Bullseye and later.",
   },
   {
     title: "Receiver",
@@ -82,8 +82,9 @@ export function Hardware() {
           title="Software"
           lead={
             <>
-              Flash <Link href="https://adsb.im">adsb.im</Link>, or install readsb on the OS you run.
-              Then add Tally:
+              Install readsb on the OS you run (Raspberry Pi OS, Debian, Ubuntu), then add Tally. On{" "}
+              <Link href="https://adsb.im">adsb.im</Link>, run Tally as a container instead: see the{" "}
+              <Link href={packagingGuide}>packaging guide</Link> or <Link href="/#feed">Feed Tally</Link>.
             </>
           }
         />

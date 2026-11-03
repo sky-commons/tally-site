@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Card, Flex } from "@radix-ui/themes";
+import { Box, Card, Flex, Link, Text } from "@radix-ui/themes";
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { count, Stat } from "./ui";
 import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
-import { api, type Network } from "./api";
+import { api, mapUrl, type Network } from "./api";
 
 // The API answers a box at most 60 degrees each way.
 const maxSpan = 60;
@@ -167,18 +168,32 @@ export function LiveMap() {
     };
   }, []);
 
+  // MLAT has never solved a position yet: its counter and its colour's legend show only once it has.
+  const mlat = (network?.aircraft_by_source.mlat ?? 0) > 0;
   return (
+    <Box>
     <div className="live-map">
       <div ref={container} className="map-canvas" />
       <Card size="1" className="live-map-stats">
         <Flex gap="4" wrap="wrap">
           <Stat label="receivers" value={count(network?.receivers_online)} />
           <Stat label="aircraft" value={count(network?.aircraft)} />
-          <Stat label="by MLAT" value={count(network?.aircraft_by_source.mlat)} />
+          {mlat && <Stat label="by MLAT" value={count(network?.aircraft_by_source.mlat)} />}
           <Stat label="msg/s" value={count(network?.messages_per_sec)} />
         </Flex>
       </Card>
     </div>
+      <Flex justify="between" align="center" gap="3" mt="2">
+        <Text size="1" color="gray">
+          {mlat ? "Live. Red is Tally MLAT." : "Live, from ADS-B. MLAT is coming."}
+        </Text>
+        <Link href={mapUrl} size="2" weight="medium">
+          <Flex as="span" align="center" gap="1">
+            Full map <ArrowTopRightIcon />
+          </Flex>
+        </Link>
+      </Flex>
+    </Box>
   );
 }
 
