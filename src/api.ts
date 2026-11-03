@@ -22,7 +22,12 @@ export type Station = {
   messages_per_sec: number;
   location: Position | null;
   software: string | null;
+  /** The relay's check of the claimed location against the aircraft the station hears (RFC-0204):
+   * absent until it has heard enough. `off_km` (5 km steps) only when `wrong`. */
+  location_check?: LocationCheck;
 };
+
+export type LocationCheck = { state: "unjudged" | "fits" | "wrong"; off_km?: number };
 
 /** `GET /v1/me`: the stations whose newest session came from the asking address. */
 export type Me = {
