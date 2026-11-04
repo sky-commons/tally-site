@@ -105,9 +105,9 @@ body {
   font-weight: bold;
 }
 
-/* Long commands in a note wrap on a phone rather than run off the page. */
+/* Long commands in running text wrap on a phone rather than run off the page. */
 @media (max-width: 640px) {
-  .note-list .inline-code {
+  .inline-code {
     white-space: normal;
     overflow-wrap: anywhere;
   }

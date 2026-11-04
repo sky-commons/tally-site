@@ -57,6 +57,12 @@ export function Feeders() {
         <Text as="p" size="2" color="gray" mt="2">
           With a key already there, this only prints it.
         </Text>
+        <Text as="p" size="3" mt="5">
+          In Docker, the feeder prints its key and station page when it starts:
+        </Text>
+        <Box mt="3">
+          <CommandBlock command="docker logs tally-feed 2>&1 | grep receiver" />
+        </Box>
       </Box>
     </Section>
   );
