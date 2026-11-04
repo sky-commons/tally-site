@@ -3,15 +3,19 @@ import { Badge, Box, Button, Card, Flex, Grid, Heading, Link, Section, Separator
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { LiveMap } from "../LiveMap";
 import { repo } from "../Layout";
-import { feedRelease, mapUrl, read, shortKey, urlKey, type Me } from "../api";
+import { feedTag, mapUrl, read, shortKey, urlKey, type Me } from "../api";
 import { CommandBlock, count, InlineCode, NoteList, SectionHeading } from "../ui";
 
 // The tally README's own form: download the installer, then run it, so what runs is what was read.
 export const installCommand = `curl -fsSL https://github.com/sky-commons/tally/releases/latest/download/install.sh -o /tmp/tally-install.sh
 sudo bash /tmp/tally-install.sh`;
 export const packagingGuide = `${repo}/blob/main/packaging/README.md`;
-const composeExample = `  tally-feed:
-    image: ghcr.io/sky-commons/tally-feed:${feedRelease}
+// adsb.im starts only its own compose files, so Tally gets a project of its own on adsb.im's network,
+// reading adsb.im's location from its .env (linked beside it).
+const adsbimCompose = `name: tally
+services:
+  tally-feed:
+    image: ghcr.io/sky-commons/tally-feed:${feedTag}
     container_name: tally-feed
     restart: unless-stopped
     environment:
@@ -20,7 +24,24 @@ const composeExample = `  tally-feed:
       - LONG=\${FEEDER_LONG}
       - ALT=\${FEEDER_ALT_M}m
     volumes:
-      - /opt/adsb/tally-feed:/var/lib/tally-feed`;
+      - /opt/adsb/tally-feed:/var/lib/tally-feed
+networks:
+  default:
+    name: adsb_im_bridge
+    external: true`;
+const adsbimStart = `sudo ln -s /opt/adsb/config/.env /opt/adsb/tally/.env
+cd /opt/adsb/tally && sudo docker compose up -d`;
+const composeExample = `  tally-feed:
+    image: ghcr.io/sky-commons/tally-feed:${feedTag}
+    container_name: tally-feed
+    restart: unless-stopped
+    environment:
+      - BEASTHOST=ultrafeeder
+      - LAT=51.4779
+      - LONG=-0.0015
+      - ALT=20m
+    volumes:
+      - ./tally-feed:/var/lib/tally-feed`;
 const relayCommand = `tally-relay keygen > /etc/tally/relay.key
 tally-relay --key /etc/tally/relay.key --max-upload 6Mbit/s \\
   --listen 0.0.0.0:10900 --beast-out 127.0.0.1:30105`;
@@ -55,9 +76,14 @@ const feederNotes: ReactNode[] = [
     installer once more.
   </>,
   <>
-    <Text weight="bold">After install</Text> it prints your station's page. Within a minute your station is at{" "}
-    <Link href="/feeders/">/feeders/</Link> and its aircraft are on the <Link href={mapUrl}>map</Link>. No ranking or
-    MLAT credit yet.
+    <Text weight="bold">After install</Text> it prints the link to your station's page. Within a minute its aircraft
+    are on the <Link href={mapUrl}>map</Link>. No ranking or MLAT credit yet.
+  </>,
+  <>
+    <Text weight="bold">No location set?</Text> The installer asks for the antenna's street address (or run it with{" "}
+    <InlineCode>--locate</InlineCode>) and works out the coordinates and elevation on the receiver. The address goes
+    only to the US Census geocoder and OpenStreetMap, never to Tally; the coordinates they find go to USGS (or
+    Open-Meteo outside the US) for the elevation.
   </>,
   <>
     Reads BEAST on <InlineCode>:30005</InlineCode>. Opens no port, leaves other feeds alone. UAT:{" "}
@@ -117,7 +143,7 @@ const faq: { q: string; a: ReactNode }[] = [
     a: (
       <>
         <Link href="https://status.skycommons.org">status.skycommons.org</Link> checks the site, the map, the API and
-        the relay every ten minutes.
+        the relay every few hours.
       </>
     ),
   },
@@ -199,9 +225,40 @@ export function Home() {
             adsb.im, or Docker
           </Heading>
           <Text as="p" size="3" color="gray" style={{ maxWidth: 760 }}>
-            On adsb.im or a compose setup, run Tally as a container beside ultrafeeder (
-            <Link href={packagingGuide}>packaging guide</Link>). Containers don't update themselves: move the tag when
-            a release comes out.
+            Run Tally as a container beside ultrafeeder (<Link href={packagingGuide}>packaging guide</Link>).{" "}
+            <InlineCode>:{feedTag}</InlineCode> follows releases, so Watchtower or a periodic{" "}
+            <InlineCode>docker compose pull && docker compose up -d</InlineCode> keeps it current; pin{" "}
+            <InlineCode>vX.Y.Z</InlineCode> to control it.
+          </Text>
+          <Heading as="h4" size="3" mt="5" mb="2">
+            On adsb.im
+          </Heading>
+          <Text as="p" size="3" color="gray" style={{ maxWidth: 760 }}>
+            adsb.im has no way to add it from its web page yet: SSH in. It starts only its own compose files and has
+            no slot for another, so Tally gets a file of its own, in its own directory (adsb.im moves any{" "}
+            <InlineCode>.yml</InlineCode> left in <InlineCode>/opt/adsb</InlineCode> itself). Make the directory with{" "}
+            <InlineCode>sudo mkdir /opt/adsb/tally</InlineCode> and save this as{" "}
+            <InlineCode>/opt/adsb/tally/docker-compose.yml</InlineCode>:
+          </Text>
+          <Box mt="3">
+            <CommandBlock command={adsbimCompose} />
+          </Box>
+          <Text as="p" size="3" color="gray" mt="3" style={{ maxWidth: 760 }}>
+            The <InlineCode>{"${FEEDER_…}"}</InlineCode> values are the location you gave adsb.im, from its{" "}
+            <InlineCode>/opt/adsb/config/.env</InlineCode>; linking that file beside this one lets compose read them.{" "}
+            <InlineCode>adsb_im_bridge</InlineCode> is adsb.im's network, where ultrafeeder is, and the key lives in{" "}
+            <InlineCode>/opt/adsb/tally-feed</InlineCode>. Link the <InlineCode>.env</InlineCode> and start Tally; it starts again with the box:
+          </Text>
+          <Box mt="3">
+            <CommandBlock command={adsbimStart} />
+          </Box>
+          <Heading as="h4" size="3" mt="5" mb="2">
+            Any other compose setup
+          </Heading>
+          <Text as="p" size="3" color="gray" style={{ maxWidth: 760 }}>
+            Add this service to the compose file that runs ultrafeeder, with your antenna's latitude, longitude and
+            altitude in metres. <InlineCode>BEASTHOST</InlineCode> is the ultrafeeder container's name, and both must
+            be on the same compose network (the same file does that).
           </Text>
           <Box mt="3">
             <CommandBlock command={composeExample} />
