@@ -109,5 +109,6 @@ export const mlatReceivers = 3;
  * once it has. The live counters read the API's own count and need no change. */
 export const mlatRunning = false;
 
-/** The release whose image the compose example pins (packaging/README.md, "Run it as a container"). */
-export const feedRelease = "v0.7.2";
+/** The image tag the compose examples name: the major tag, which every 0.x release moves
+ * (packaging/README.md, "Run it as a container"). */
+export const feedTag = "0";
