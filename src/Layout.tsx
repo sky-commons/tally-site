@@ -58,9 +58,6 @@ export function Layout({ children }: { children: ReactNode }) {
                 <Link href="/hardware/" size="2">
                   Hardware
                 </Link>
-                <Link href="/#faq" size="2">
-                  FAQ
-                </Link>
                 <Link href="https://status.skycommons.org" size="2">
                   Status
                 </Link>
