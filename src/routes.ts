@@ -89,7 +89,7 @@ export function pageMeta(path: string): { title: string; description: string } {
       return {
         title: "Tally: an open ADS-B network",
         description:
-          "Feed your ADS-B receiver to an open network alongside what you already run. Early: one relay, two receivers, a live map, MLAT coming. Open data, open code.",
+          "Open ADS-B feeder and relay network. Live map, public API, open data.",
       };
     case "leaderboard":
       return { title: "Leaderboard · Tally", description: "Tally's per-area leaderboard, empty until MLAT runs." };

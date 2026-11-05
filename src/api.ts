@@ -1,8 +1,7 @@
-// The public Tally API and map (one operator's, today Flightlines', under Sky Commons' names). The
-// API's JSON is declared in sky-commons/tally crates/api-types; these are the fields the site reads.
+// The public Tally API and map. The API's JSON is declared in sky-commons/tally crates/api-types; these are the fields the site reads.
 export const api = "https://tally-api.skycommons.org";
 
-/** The full map: tar1090 over the network's readsb (RFC-0187 §1). */
+/** The full map: tar1090 over the network's readsb. */
 export const mapUrl = "https://tally-map.skycommons.org";
 
 export type Network = {
@@ -22,7 +21,7 @@ export type Station = {
   messages_per_sec: number;
   location: Position | null;
   software: string | null;
-  /** The relay's check of the claimed location against the aircraft the station hears (RFC-0204):
+  /** The relay's check of the claimed location against the aircraft the station hears:
    * absent until it has heard enough. `off_km` (5 km steps) only when `wrong`. */
   location_check?: LocationCheck;
 };

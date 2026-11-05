@@ -146,7 +146,7 @@ function Found({ station, stats }: { station: Station; stats: FeederStats | null
   );
 }
 
-/** The relay found the claimed location doesn't fit the aircraft this station hears (RFC-0204). */
+/** The relay found the claimed location doesn't fit the aircraft this station hears. */
 function LocationLooksWrong({ offKm }: { offKm?: number }) {
   return (
     <Callout.Root color="amber">
