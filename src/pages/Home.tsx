@@ -22,7 +22,7 @@ services:
       - BEASTHOST=ultrafeeder
       - LAT=\${FEEDER_LAT}
       - LONG=\${FEEDER_LONG}
-      - ALT=\${FEEDER_ALT_M}m
+      - ALT_MSL=\${FEEDER_ALT_M}m
     volumes:
       - /opt/adsb/tally-feed:/var/lib/tally-feed
 networks:
@@ -39,7 +39,7 @@ const composeExample = `  tally-feed:
       - BEASTHOST=ultrafeeder
       - LAT=51.4779
       - LONG=-0.0015
-      - ALT=20m
+      - ALT_MSL=20m
     volumes:
       - ./tally-feed:/var/lib/tally-feed`;
 const relayCommand = `tally-relay keygen > /etc/tally/relay.key
@@ -257,7 +257,8 @@ export function Home() {
           </Heading>
           <Text as="p" size="3" color="gray" style={{ maxWidth: 760 }}>
             Add this service to the compose file that runs ultrafeeder, with your antenna's latitude, longitude and
-            altitude in metres. <InlineCode>BEASTHOST</InlineCode> is the ultrafeeder container's name, and both must
+            altitude. <InlineCode>ALT_MSL</InlineCode> is the antenna's height above sea level, in metres
+            (<InlineCode>20m</InlineCode>) or feet (<InlineCode>65ft</InlineCode>). <InlineCode>BEASTHOST</InlineCode> is the ultrafeeder container's name, and both must
             be on the same compose network (the same file does that).
           </Text>
           <Box mt="3">
