@@ -107,48 +107,6 @@ const feederNotes: ReactNode[] = [
   </>,
 ];
 
-const faq: { q: string; a: ReactNode }[] = [
-  {
-    q: "How is this different from adsb.lol, ADSBexchange or FlightAware?",
-    a: (
-      <>
-        Run it alongside them: Tally reads the same BEAST output and touches nothing else. There are no perks yet, no
-        premium account and no MLAT results. What differs is the structure: anyone can run a relay, your receiver is a
-        key rather than an account, and all the data is open.
-      </>
-    ),
-  },
-  {
-    q: "What does “CC0 in, ODbL out” mean?",
-    a: (
-      <>
-        What your receiver sends is given away with no rights reserved (CC0), so relays may pass it on freely. The
-        published database is under the ODbL: anyone may use it, commercially too, as long as they credit it and share
-        changes to the database on the same terms. The daily traces are at{" "}
-        <Link href="https://github.com/sky-commons/history">sky-commons/history</Link>.
-      </>
-    ),
-  },
-  {
-    q: "What do I get for feeding?",
-    a: (
-      <>
-        Today: your station page and the map. Once MLAT runs, credit for the positions you help solve and a place on
-        the leaderboard.
-      </>
-    ),
-  },
-  {
-    q: "Is it up?",
-    a: (
-      <>
-        <Link href="https://status.skycommons.org">status.skycommons.org</Link> checks the site, the map, the API and
-        the relay every few hours.
-      </>
-    ),
-  },
-];
-
 export function Home() {
   return (
     <>
@@ -281,43 +239,6 @@ export function Home() {
           <Button size="3" variant="outline" color="gray" asChild>
             <a href={`${repo}#what-a-relay-costs`}>What a relay costs</a>
           </Button>
-        </Flex>
-      </Section>
-
-      <Separator size="4" />
-
-      <Section size="2">
-        <SectionHeading title="Where it stands" />
-        <NoteList
-          items={[
-            <>
-              One relay so far (Flightlines). Want to run the second?{" "}
-              <Link href={`${repo}/issues`}>Open an issue</Link>.
-            </>,
-            <>
-              Two receivers so far, in LA and the Bay Area, about 550 km apart. MLAT needs 3–4 receivers in range of
-              each other, so it hasn't solved a position yet. The <Link href="/leaderboard/">leaderboard</Link> starts
-              with it.
-            </>,
-          ]}
-        />
-      </Section>
-
-      <Separator size="4" />
-
-      <Section size="2" id="faq">
-        <SectionHeading title="Questions" />
-        <Flex direction="column" gap="4" mt="5" maxWidth="760px">
-          {faq.map((item) => (
-            <Flex key={item.q} direction="column" gap="1">
-              <Heading as="h3" size="4">
-                {item.q}
-              </Heading>
-              <Text as="p" size="3" color="gray">
-                {item.a}
-              </Text>
-            </Flex>
-          ))}
         </Flex>
       </Section>
     </>
