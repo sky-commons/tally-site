@@ -47,25 +47,11 @@ tally-relay --key /etc/tally/relay.key --max-upload 6Mbit/s \\
   --listen 0.0.0.0:10900 --beast-out 127.0.0.1:30105`;
 
 const differences: { title: string; body: ReactNode }[] = [
-  {
-    title: "Anyone can run a relay",
-    body: "Feeders fail over between relays. Today there is one, run by Flightlines; the second is open.",
-  },
-  { title: "Signed at the antenna", body: "Every batch carries your station key. No account." },
-  { title: "Delivery is checked", body: "Feeders verify relays hold their data." },
-  {
-    title: "MLAT, coming",
-    body: "Solved on the relays once 3–4 receivers in range hear the same aircraft. It hasn't solved one yet.",
-  },
-  {
-    title: "Take the raw back",
-    body: (
-      <>
-        Run a relay, get your area as BEAST via <InlineCode>--beast-out</InlineCode>.
-      </>
-    ),
-  },
-  { title: "Open data", body: "CC0 in, ODbL out. Code MIT or Apache-2.0." },
+  { title: "Relays", body: "Anyone can run one. Feeders fail over between them." },
+  { title: "No account", body: "Each batch is signed with your station key." },
+  { title: "Checked delivery", body: "Feeders verify relays hold their data." },
+  { title: "MLAT", body: "Not running yet. Needs 3–4 receivers in range of each other." },
+  { title: "Licences", body: "Feeds CC0, database ODbL, code MIT or Apache-2.0." },
 ];
 
 const feederNotes: ReactNode[] = [
@@ -112,18 +98,11 @@ export function Home() {
     <>
       <Section size="2" pt="6" pb="5">
         <Flex direction="column" align="start" gap="4" maxWidth="760px">
-          <Badge size="2" variant="soft">
-            Early
-          </Badge>
           <Heading as="h1" size={{ initial: "8", sm: "9" }}>
-            An ADS-B network with no single operator
+            Open ADS-B feeder and relay network
           </Heading>
-          <Text as="p" size="5" color="gray">
-            Feed it alongside what you already run. It is built so anyone can run a relay and no one company holds
-            the data.
-          </Text>
-          <Text as="p" size="3" weight="medium">
-            Early: 1 relay (Flightlines), 2 receivers, map only, MLAT coming.
+          <Text as="p" size="3" color="gray">
+            1 relay, 2 receivers. MLAT not running yet.
           </Text>
           <Flex gap="3" wrap="wrap">
             <Button size="3" asChild>
@@ -149,7 +128,7 @@ export function Home() {
       <Separator size="4" />
 
       <Section size="2">
-        <SectionHeading title="How it differs" />
+        <SectionHeading title="How it works" />
         <Grid columns={{ initial: "1", sm: "2", md: "3" }} gap="4" mt="5">
           {differences.map((item) => (
             <Card key={item.title} size="2">
@@ -228,7 +207,7 @@ export function Home() {
       <Separator size="4" />
 
       <Section size="2" id="relay">
-        <SectionHeading title="Run a relay" lead="One binary. --max-upload caps your bill." />
+        <SectionHeading title="Run a relay" lead="--max-upload caps its upload." />
         <Box mt="5">
           <CommandBlock command={relayCommand} />
         </Box>

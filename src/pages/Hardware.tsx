@@ -71,7 +71,7 @@ export function Hardware() {
       <Separator size="4" />
 
       <Section size="2">
-        <SectionHeading title="The antenna" lead="It decides your range." />
+        <SectionHeading title="The antenna" />
         <NoteList items={antennaNotes} />
       </Section>
 
