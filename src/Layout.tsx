@@ -48,7 +48,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <Link href="https://skycommons.org" color="gray" underline="always">
                 Sky Commons
               </Link>{" "}
-              project. Pilots say “tally” when they have the traffic in sight.
+              project.
             </Text>
             <Flex asChild gap="4" wrap="wrap">
               <nav aria-label="More">

@@ -54,9 +54,7 @@ export function Leaderboard() {
         Leaderboard
       </Heading>
       <Text as="p" size="4" color="gray" mb="6" style={{ maxWidth: 760 }}>
-        Empty until MLAT runs. Ranking needs MLAT, and MLAT needs 3–4 receivers in range of each
-        other; no area has that yet, so no station is ranked. Once it runs, stations are ranked per
-        area by the coverage only they have and by how much they help MLAT.
+        Empty until MLAT runs. Stations will be ranked per area by unique coverage and MLAT help.
       </Text>
       {state.kind === "loading" ? (
         <Text color="gray">Loading…</Text>
