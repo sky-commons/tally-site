@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Box, Button, Card, Flex, Heading, Section, Text, TextField } from "@radix-ui/themes";
-import { isKey, urlKey } from "../api";
+import { isKey, stationPath } from "../api";
 import { CommandBlock, SectionHeading } from "../ui";
 
 export function Feeders() {
@@ -12,7 +12,7 @@ export function Feeders() {
       setWrong(true);
       return;
     }
-    window.location.assign(`/feeders/${urlKey(text)}`);
+    window.location.assign(stationPath(text));
   };
   return (
     <Section size="2" pt="6">

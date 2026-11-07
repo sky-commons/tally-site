@@ -3,7 +3,7 @@ import { Badge, Box, Button, Card, Flex, Grid, Heading, Link, Section, Separator
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { LiveMap } from "../LiveMap";
 import { repo } from "../Layout";
-import { feedTag, mapUrl, read, shortKey, urlKey, type Me } from "../api";
+import { feedTag, mapUrl, read, shortKey, stationPath, type Me } from "../api";
 import { CommandBlock, count, InlineCode, NoteList, SectionHeading } from "../ui";
 
 // The tally README's own form: download the installer, then run it, so what runs is what was read.
@@ -259,7 +259,7 @@ function Feeding() {
               <Badge color={station.online ? "green" : "gray"} variant="soft">
                 {station.online ? "Online" : "Offline"}
               </Badge>
-              <Link href={`/feeders/${urlKey(station.key)}`} size="2" className="mono">
+              <Link href={stationPath(station.key)} size="2" className="mono">
                 {shortKey(station.key)}
               </Link>
             </Flex>
