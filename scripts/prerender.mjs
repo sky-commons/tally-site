@@ -4,7 +4,7 @@
 // this build). Each page carries its own title, description and link-preview tags.
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
-import { api, pageMeta, prerendered, render, urlKey } from "../dist-server/entry-server.js";
+import { api, pageMeta, prerendered, render, stationPath } from "../dist-server/entry-server.js";
 
 const site = "https://tally.skycommons.org";
 // The map's card (packaging/map in sky-commons/tally): a raster picture, which previews need.
@@ -40,10 +40,10 @@ function tags(path) {
 // ranked and unranked, from the figures of every relay the API's operator names). A build without
 // the API still succeeds: those pages are drawn from 404.html instead.
 async function stations() {
-  const keys = new Set();
+  const paths = new Set();
   try {
     const list = await (await fetch(`${api}/v1/stations`)).json();
-    for (const station of list.stations ?? []) keys.add(urlKey(station.key));
+    for (const station of list.stations ?? []) paths.add(stationPath(station.key));
   } catch (error) {
     console.warn(`prerender: no /v1/stations (${error})`);
   }
@@ -51,12 +51,12 @@ async function stations() {
     const list = await (await fetch(`${api}/v1/leaderboards`)).json();
     for (const area of list.areas ?? []) {
       const board = await (await fetch(`${api}/v1/leaderboards/${area.area}`)).json();
-      for (const entry of [...(board.by_unique_coverage ?? []), ...(board.unranked ?? [])]) keys.add(urlKey(entry.key));
+      for (const entry of [...(board.by_unique_coverage ?? []), ...(board.unranked ?? [])]) paths.add(stationPath(entry.key));
     }
   } catch (error) {
     console.warn(`prerender: no leaderboards (${error})`);
   }
-  return [...keys].map((key) => ({ path: `/feeders/${key}/`, file: `feeders/${key}/index.html` }));
+  return [...paths].map((path) => ({ path, file: `${path.slice(1)}index.html` }));
 }
 
 const pages = [...prerendered, ...(await stations())];

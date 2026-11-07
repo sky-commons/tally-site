@@ -5,7 +5,7 @@ import {
   mlatReceivers,
   read,
   shortKey,
-  urlKey,
+  stationPath,
   type Leaderboard as Board,
   type LeaderboardEntry,
   type Leaderboards,
@@ -151,7 +151,7 @@ function Area({ board }: { board: Board }) {
             </Text>
             <Flex gap="3" wrap="wrap">
               {board.unranked.map((feeder) => (
-                <Link key={feeder.key} href={`/feeders/${urlKey(feeder.key)}`} size="2" className="mono">
+                <Link key={feeder.key} href={stationPath(feeder.key)} size="2" className="mono">
                   {shortKey(feeder.key)}
                 </Link>
               ))}
@@ -179,7 +179,7 @@ function Ranking({ entries }: { entries: LeaderboardEntry[] }) {
           <Table.Row key={entry.key}>
             <Table.RowHeaderCell>{entry.rank}</Table.RowHeaderCell>
             <Table.Cell>
-              <Link href={`/feeders/${urlKey(entry.key)}`} className="mono">
+              <Link href={stationPath(entry.key)} className="mono">
                 {shortKey(entry.key)}
               </Link>
             </Table.Cell>

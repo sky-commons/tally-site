@@ -90,6 +90,12 @@ export function urlKey(key: string): string {
   return key.trim().replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+/** A station's page: its own address, the key as a URL carries it, with the trailing slash (the
+ *  page is prerendered there; without it, GitHub Pages answers with a redirect to it). */
+export function stationPath(key: string): string {
+  return `/feeders/${urlKey(key)}/`;
+}
+
 /** A key short enough for a table: its first and last characters. */
 export function shortKey(key: string): string {
   const k = urlKey(key);

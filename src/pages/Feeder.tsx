@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Badge, Box, Button, Callout, Card, Code, Flex, Grid, Heading, Link, Section, Text } from "@radix-ui/themes";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { read, shortKey, urlKey, type Answer, type FeederStats, type Station } from "../api";
+import { read, shortKey, stationPath, urlKey, type Answer, type FeederStats, type Station } from "../api";
 import { StationMap } from "../StationMap";
 import { ago, CommandBlock, CopyButton, count, km, km2, place, Stat } from "../ui";
 import { installCommand } from "./Home";
@@ -31,7 +31,7 @@ export function Feeder({ stationKey }: { stationKey: string }) {
   }, [key]);
 
   useEffect(() => {
-    document.title = pageMeta(`/feeders/${key}/`).title;
+    document.title = pageMeta(stationPath(key)).title;
   }, [key]);
 
   return (
