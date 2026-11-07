@@ -35,21 +35,28 @@ function tags(path) {
   ].join("\n    ");
 }
 
-// Every station the API names now (each area's ranked and unranked), so its page answers 200.
-// A build without the API still succeeds: those pages are drawn from 404.html instead.
+// Every station the API names now, so its page answers 200 with its own title: each the relay
+// knows (/v1/stations, minutes after it first connects), and each on a leaderboard (an area's
+// ranked and unranked, from the figures of every relay the API's operator names). A build without
+// the API still succeeds: those pages are drawn from 404.html instead.
 async function stations() {
+  const keys = new Set();
+  try {
+    const list = await (await fetch(`${api}/v1/stations`)).json();
+    for (const station of list.stations ?? []) keys.add(urlKey(station.key));
+  } catch (error) {
+    console.warn(`prerender: no /v1/stations (${error})`);
+  }
   try {
     const list = await (await fetch(`${api}/v1/leaderboards`)).json();
-    const keys = new Set();
     for (const area of list.areas ?? []) {
       const board = await (await fetch(`${api}/v1/leaderboards/${area.area}`)).json();
       for (const entry of [...(board.by_unique_coverage ?? []), ...(board.unranked ?? [])]) keys.add(urlKey(entry.key));
     }
-    return [...keys].map((key) => ({ path: `/feeders/${key}/`, file: `feeders/${key}/index.html` }));
   } catch (error) {
-    console.warn(`prerender: no station pages (${error})`);
-    return [];
+    console.warn(`prerender: no leaderboards (${error})`);
   }
+  return [...keys].map((key) => ({ path: `/feeders/${key}/`, file: `feeders/${key}/index.html` }));
 }
 
 const pages = [...prerendered, ...(await stations())];

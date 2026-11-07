@@ -5,6 +5,7 @@ import { read, shortKey, urlKey, type Answer, type FeederStats, type Station } f
 import { StationMap } from "../StationMap";
 import { ago, CommandBlock, CopyButton, count, km, km2, place, Stat } from "../ui";
 import { installCommand } from "./Home";
+import { pageMeta } from "../routes";
 
 type Reads = { station: Answer<Station>; stats: Answer<FeederStats> } | null;
 
@@ -30,7 +31,7 @@ export function Feeder({ stationKey }: { stationKey: string }) {
   }, [key]);
 
   useEffect(() => {
-    document.title = `Station ${shortKey(key)} · Tally`;
+    document.title = pageMeta(`/feeders/${key}/`).title;
   }, [key]);
 
   return (
