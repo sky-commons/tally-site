@@ -1,5 +1,6 @@
 # Builds the site and publishes it to GitHub Pages (tally.skycommons.org) on every push to main, and
-# every hour, so a new station's page is prerendered (scripts/prerender.mjs) and answers 200.
+# every ten minutes, so a station that has just connected has its own page (scripts/prerender.mjs),
+# answering 200 with its title, within minutes rather than at the next hour.
 name: pages
 
 on:
@@ -7,7 +8,7 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron: "23 * * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:

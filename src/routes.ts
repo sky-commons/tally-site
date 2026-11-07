@@ -1,4 +1,4 @@
-import { mapUrl } from "./api";
+import { mapUrl, shortKey } from "./api";
 
 // The site's pages. Every page is prerendered at its path, and so is each station the API knew at
 // build time (prerender.mjs); a station newer than the build and the short links to the map are
@@ -97,7 +97,7 @@ export function pageMeta(path: string): { title: string; description: string } {
       return { title: "Find your station · Tally", description: "Open your Tally receiver's station page by its public key." };
     case "feeder":
       return {
-        title: "Station · Tally",
+        title: `Station ${shortKey(page.key)} · Tally`,
         description: "A Tally receiver: whether it is feeding, its range and coverage over the last day.",
       };
     case "api":
